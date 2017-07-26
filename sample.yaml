@@ -1,0 +1,41 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: petclinic
+  namespace: default
+spec:
+  selector:
+    app: petclinic
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+  type: NodePort
+
+---
+
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: petclinic
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    app: petclinic
+  template:
+    metadata:
+      labels:
+        app: petclinic
+    spec:
+      serviceAccount: default
+      containers:
+        - name: petclinic
+          image: amitmohleji/petclinic:10
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+      imagePullSecrets:
+        - name: regsecret
+
